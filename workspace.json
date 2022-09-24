@@ -2,7 +2,9 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
+    "caas-api": "apps/caas-api",
     "caas-demo": "apps/caas-demo",
-    "caas-demo-e2e": "apps/caas-demo-e2e"
+    "caas-demo-e2e": "apps/caas-demo-e2e",
+    "static-caas-data": "libs/static-caas-data"
   }
 }

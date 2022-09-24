@@ -51,7 +51,8 @@
       "defaultConfiguration": "development",
       "options": {
         "buildTarget": "caas-demo:build",
-        "hmr": true
+        "hmr": true,
+        "proxyConfig": "apps/caas-demo/proxy.conf.json"
       },
       "configurations": {
         "development": {
