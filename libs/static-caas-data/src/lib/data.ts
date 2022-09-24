@@ -12,13 +12,13 @@ export enum Team {
 export enum PieceTypes {
   Pawn = 'PAWN',
   Knight = 'KNIGHT',
-  Bishop = 'Bishop',
-  Rook = 'Rook',
-  Queen = 'Queen',
-  King = 'King',
+  Bishop = 'BISHOP',
+  Rook = 'ROOK',
+  Queen = 'QUEEN',
+  King = 'KING',
 }
 
-interface PiecePosition {
+export interface PiecePosition {
   id: string;
   pieceId: string;
   team: Team;
