@@ -1,7 +1,10 @@
-export interface GameRecord {
-  id: string;
+export interface GameRecordInput {
   piecePositionHistory: PiecePosition[];
   // Note: would contain playerIds, startTime, settings, etc. in the future.
+}
+
+export interface GameRecord extends GameRecordInput {
+  id: string;
 }
 
 export enum Team {
@@ -9,7 +12,7 @@ export enum Team {
   Black = 'BLACK',
 }
 
-export enum PieceTypes {
+export enum PieceType {
   Pawn = 'PAWN',
   Knight = 'KNIGHT',
   Bishop = 'BISHOP',
@@ -39,8 +42,9 @@ export interface PiecePosition {
 //       and display respectively). For chess as a service, that arrangement does not exist, and it'd be a pretty poor
 //       service if it handed back all the moves and said "here, now you figure it out".
 export interface LiveGameState {
+  id: string;
   activeTeam: Team;
   livePositions: PiecePosition[];
-  capturedWhitePieceTypes: PieceTypes[];
-  capturedBlackPieceTypes: PieceTypes[];
+  capturedWhitePieceTypes: PieceType[];
+  capturedBlackPieceTypes: PieceType[];
 }
