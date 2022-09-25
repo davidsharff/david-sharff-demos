@@ -5,6 +5,7 @@ import {
   GameRecord,
   LiveGameState,
   Team,
+  initialPositions,
 } from '@david-sharff-demos/static-caas-data';
 import { getAllGames, getGameById, insertGame } from './db';
 
@@ -20,7 +21,7 @@ export async function getGameDetails(gameId: string): Promise<LiveGameState> {
 
 export async function createGame(): Promise<LiveGameState> {
   const gameRecord = await insertGame({
-    piecePositionHistory: [],
+    piecePositionHistory: initialPositions,
   });
 
   return _calcLiveGameState(gameRecord);

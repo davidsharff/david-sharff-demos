@@ -12,7 +12,6 @@ function _addBaseUrl(endPath: string): string {
 }
 
 export function addApiRoutes(app: Express) {
-  // TODO: consider extending express' Request type for req params and req body (ex. Request<{ gameId: string }>).
   app.get(
     _addBaseUrl('state/:gameId'),
     async (req: Request<{ gameId: string }>, res) => {
