@@ -15,6 +15,18 @@ export async function getGameList(): Promise<GameRecord[]> {
 export async function getGameDetails(gameId: string): Promise<LiveGameState> {
   const gameRecord = await getGameById(gameId);
 
+  return _calcLiveGameState(gameRecord);
+}
+
+export async function createGame(): Promise<LiveGameState> {
+  const gameRecord = await insertGame({
+    piecePositionHistory: [],
+  });
+
+  return _calcLiveGameState(gameRecord);
+}
+
+function _calcLiveGameState(gameRecord: GameRecord): LiveGameState {
   return {
     id: gameRecord.id,
     activeTeam: Team.White,
@@ -22,10 +34,4 @@ export async function getGameDetails(gameId: string): Promise<LiveGameState> {
     capturedWhitePieceTypes: [],
     capturedBlackPieceTypes: [],
   };
-}
-
-export async function createGame(): Promise<GameRecord> {
-  return await insertGame({
-    piecePositionHistory: [],
-  });
 }
