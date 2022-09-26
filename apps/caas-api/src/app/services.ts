@@ -2,6 +2,7 @@
 //       concern (e.g. gameService, userService, etc.)
 
 import {
+  AvailableMove,
   GameRecord,
   initialPositions,
   LiveGameState,
@@ -15,7 +16,7 @@ export async function getGameList(): Promise<GameRecord[]> {
   return await getAllGames();
 }
 
-export async function getGameDetails(gameId: string): Promise<LiveGameState> {
+export async function getGameState(gameId: string): Promise<LiveGameState> {
   const gameRecord = await getGameById(gameId);
 
   return _calcLiveGameState(gameRecord);
@@ -81,18 +82,96 @@ function _calcLivePositions(gameRecord: GameRecord): PiecePosition[] {
     new Set(piecePositionHistory.map(({ pieceId }) => pieceId))
   );
 
-  // Built-in Array.prototype.findLast is not included in the project's TS es2015 target
-  // Slice to avoid mutating the OG array.
-  const reversePosHistory = piecePositionHistory.slice().reverse();
-
   return uniquePieceIds.reduce((acc: PiecePosition[], pieceId) => {
     const isCaptured = piecePositionHistory.some(
       ({ capturedPieceId }) => capturedPieceId === pieceId
     );
+
     if (isCaptured) {
       return acc;
     }
 
-    return [...acc, reversePosHistory.find((p) => p.pieceId === pieceId)];
+    return [...acc, _calcCurrentPositionForPieceId(gameRecord, pieceId)];
   }, []);
+}
+
+export async function getAvailableMovesForGamePiece(
+  gameId: string,
+  pieceId: string
+) {
+  const gameRecord = await getGameById(gameId);
+
+  return _calcMovesForPieceId(gameRecord, pieceId);
+}
+
+export function _calcMovesForPieceId(
+  gameRecord: GameRecord,
+  pieceId: string
+): AvailableMove[] {
+  // TODO: this should be an array of tuples.
+  type MoveList = Array<{ x: number; y: number }>;
+
+  const livePositions: PiecePosition[] = _calcLivePositions(gameRecord);
+
+  const { piecePositionHistory } = gameRecord;
+  const { team, pieceType, x, y } = livePositions.find(
+    (p) => p.pieceId === pieceId
+  );
+
+  if (pieceType !== PieceType.Pawn) {
+    throw new Error(`Unhandled piece type ${pieceType} for pieceId ${pieceId}`);
+    // Putting in an else to represent this would eventually be in a switch or if/else block for each piece type.
+  } else {
+    const pieceMoveHistory = piecePositionHistory.filter(
+      (p) => p.pieceId === pieceId
+    );
+
+    const oneStepAhead = team === Team.White ? 1 : -1;
+
+    const nonCaptureMoves: MoveList = [
+      { x, y: y + oneStepAhead },
+      ...(pieceMoveHistory.length === 1
+        ? [{ x, y: y + oneStepAhead * 2 }]
+        : []),
+    ].filter(
+      (coordinates) =>
+        // Ensure the space isn't occupied or in the way the initial two space move.
+        !livePositions.find(
+          (otherPiece) =>
+            otherPiece.x === coordinates.x &&
+            ((team === Team.White &&
+              otherPiece.y > y &&
+              otherPiece.y <= coordinates.y) ||
+              (team === Team.Black &&
+                otherPiece.y < y &&
+                otherPiece.y >= coordinates.y))
+        )
+    );
+
+    // Note: this does not handle the en passant move/capture
+    const captureMoves: MoveList = livePositions
+      .filter((p) => {
+        return (
+          p.team !== team && p.y === y + oneStepAhead && Math.abs(p.x - x) === 1
+        );
+      })
+      .map((p) => ({
+        x: p.x,
+        y: p.y,
+      }));
+
+    return [...nonCaptureMoves, ...captureMoves].map((move) => ({
+      ...move,
+      capturedPieceId:
+        livePositions.find((p) => p.x === move.x && p.y === move.y)?.pieceId ||
+        null,
+    }));
+  }
+}
+
+// Built-in Array.prototype.findLast is not included in the project's TS es2015 target.
+function _calcCurrentPositionForPieceId(gameRecord: GameRecord, pieceId) {
+  return gameRecord.piecePositionHistory
+    .filter((p) => p.pieceId === pieceId)
+    .slice(-1)[0];
 }

@@ -52,6 +52,13 @@ export interface LiveGameState {
   capturedBlackPieceTypes: PieceType[];
 }
 
+export interface AvailableMove {
+  x: number;
+  y: number;
+  // Per assessment spec, but I'm not sure it is necessary since the client will have all the currently occupied positions.
+  capturedPieceId: string;
+}
+
 // ***** Constants *****
 export const initialPositions: PiecePosition[] = [
   Team.White,
