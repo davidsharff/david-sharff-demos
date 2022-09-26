@@ -33,7 +33,9 @@ export function GameConnector(): ReactElement {
   }, [gameState, data]);
 
   const handleGetAvailableMoves: GetAvailableMoves = async (pieceId) => {
-    const r: Response = await fetch(`/api/v1/game/moves/${gameId}/${pieceId}`);
+    const r: Response = await fetch(
+      `/api/v1/game/piece/moves/${gameId}/${pieceId}`
+    );
 
     const availableMoves: AvailableMove[] = await r.json();
 
@@ -48,7 +50,7 @@ export function GameConnector(): ReactElement {
   };
 
   const handleMove: OnMove = async (pieceId, x, y) => {
-    const r: Response = await fetch(`/api/v1/game/move`, {
+    const r: Response = await fetch(`/api/v1/game/piece/move`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
