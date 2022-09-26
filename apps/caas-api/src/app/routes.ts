@@ -18,6 +18,7 @@ function _addBaseUrl(endPath: string): string {
   return `/api/v1/game/${endPath}`;
 }
 
+// TODO: improve endpoint url convention
 // TODO: include error message in response
 export function addApiRoutes(app: Express) {
   app.get(
@@ -65,6 +66,17 @@ export function addApiRoutes(app: Express) {
           `${msg} Req params: ${JSON.stringify(req?.params)}:\n${e}`
         );
         res.status(500).send(msg);
+      }
+    }
+  );
+
+  app.get(
+    _addBaseUrl('move-history/:gameId'),
+    async (req: Request<{ gameId: string }>, res) => {
+      try {
+        res.status(500).send('Move history is not currently supported.');
+      } catch (e) {
+        console.error(`Something bad happened:\n${e}`);
       }
     }
   );
