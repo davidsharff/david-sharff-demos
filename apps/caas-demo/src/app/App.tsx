@@ -3,16 +3,21 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { Container } from '@mui/material';
 
-import { Home } from './views/Home/Home';
 import { NavBar } from './components/NavBar';
 
 import '../reset.css';
+import { HomeConnector } from './views/Home/HomeConnector';
+import { GameConnector } from './views/Game/GameConnector';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Home />,
-
+    element: <HomeConnector />,
+    errorElement: <div>404</div>,
+  },
+  {
+    path: '/game/:gameId',
+    element: <GameConnector />,
     errorElement: <div>404</div>,
   },
 ]);
