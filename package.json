@@ -11,12 +11,15 @@
   "dependencies": {
     "@emotion/react": "11.10.4",
     "@emotion/styled": "11.10.4",
+    "@mui/material": "^5.10.6",
     "core-js": "^3.6.5",
     "express": "^4.18.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-router-dom": "^6.4.1",
     "regenerator-runtime": "0.13.7",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "usehooks-ts": "^2.7.1"
   },
   "devDependencies": {
     "@emotion/babel-plugin": "11.10.2",

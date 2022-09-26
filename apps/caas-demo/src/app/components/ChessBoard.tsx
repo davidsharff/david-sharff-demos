@@ -1,0 +1,83 @@
+import {
+  AvailableMove,
+  LiveGameState,
+  PieceType,
+  range,
+} from '@david-sharff-demos/static-caas-data';
+import { ReactElement } from 'react';
+import { css } from '@emotion/react';
+import { useTheme } from '@mui/material';
+
+interface Props {
+  gameState: LiveGameState;
+  onClickSquare: (x: number, y: number) => void;
+  availableMoves?: AvailableMove[];
+  activePieceId?: string;
+}
+
+const wrapperCss = css`
+  flex: 1;
+`;
+const rowCss = css`
+  display: flex;
+`;
+
+export function ChessBoard(props: Props): ReactElement {
+  const { gameState, availableMoves, activePieceId } = props;
+  const theme = useTheme();
+
+  return (
+    <div css={wrapperCss}>
+      {range(8)
+        .reverse()
+        .map((y) => (
+          <div key={y} css={rowCss}>
+            {range(8).map((x) => {
+              const position = gameState.livePositions.find(
+                (pos) => pos.x === x && pos.y === y
+              );
+
+              const isAvailableMove = availableMoves?.find(
+                (move) => move.x === x && move.y === y
+              );
+
+              const isActivePieceId =
+                position?.pieceId && position.pieceId === activePieceId;
+
+              const showHighlight = isAvailableMove || isActivePieceId;
+              const squareCss = css`
+                border: solid #333 1px;
+                flex: 1;
+                padding: 30px 5px;
+                text-align: center;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                background-color: ${showHighlight
+                  ? theme.palette.primary.light
+                  : '#fff'};
+                cursor: ${position?.pieceType === PieceType.Pawn ||
+                isAvailableMove
+                  ? 'pointer'
+                  : 'default'};
+              `;
+
+              return (
+                <div
+                  key={x}
+                  css={squareCss}
+                  onClick={() => props.onClickSquare(x, y)}
+                >
+                  {position ? (
+                    `${position.team[0]}: ${position.pieceId}`
+                  ) : (
+                    <span>&nbsp;</span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ))}
+    </div>
+  );
+}
