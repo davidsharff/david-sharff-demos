@@ -30,6 +30,7 @@ export function Game(props: Props): ReactElement {
   }
 
   const handleClickSquare: (pieceId?: string) => void = (pieceId) => {
+    props.onClearAvailableMoves(); // Hack-ish but ensures clicking on any cell will wipe current selections if they exist.
     if (pieceId) {
       props.onGetAvailableMoves(pieceId);
     }

@@ -1,6 +1,7 @@
 import {
   AvailableMove,
   LiveGameState,
+  PieceType,
   range,
 } from '@david-sharff-demos/static-caas-data';
 import { ReactElement } from 'react';
@@ -48,6 +49,10 @@ export function ChessBoard(props: Props): ReactElement {
                 background-color: ${isAvailableMove || isActivePieceId
                   ? '#f6f46a66'
                   : '#fff'};
+                cursor: ${position?.pieceType === PieceType.Pawn ||
+                isAvailableMove
+                  ? 'pointer'
+                  : 'default'};
               `;
 
               return (
