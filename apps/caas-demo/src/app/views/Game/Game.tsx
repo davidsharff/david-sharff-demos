@@ -9,13 +9,15 @@ import {
   AvailableMovesForPiece,
   ClearAvailableMoves,
   GetAvailableMoves,
+  OnMove,
 } from './types';
 
 interface Props {
-  game?: LiveGameState;
+  game: LiveGameState | null;
   errorMsg?: string;
   onGetAvailableMoves: GetAvailableMoves;
   onClearAvailableMoves: ClearAvailableMoves;
+  onMove: OnMove;
   availableMoveDetails: AvailableMovesForPiece | null;
 }
 const mainColCss = css`
@@ -30,13 +32,17 @@ export function Game(props: Props): ReactElement {
   }
 
   const handleClickSquare: (x: number, y: number) => void = (x, y) => {
-    const { pieceId } =
+    const { pieceId: clickedPieceId } =
       game?.livePositions?.find((p) => p.x === x && p.y === y) || {};
 
     props.onClearAvailableMoves(); // Hack-ish but ensures clicking on any cell will wipe current selections if they exist.
 
-    if (pieceId) {
-      props.onGetAvailableMoves(pieceId);
+    if (
+      availableMoveDetails?.availableMoves?.find((m) => m.x === x && m.y === y)
+    ) {
+      props.onMove(availableMoveDetails?.pieceId, x, y);
+    } else if (clickedPieceId) {
+      props.onGetAvailableMoves(clickedPieceId);
     }
   };
 
@@ -46,12 +52,15 @@ export function Game(props: Props): ReactElement {
       {props.errorMsg ? (
         <div>Error: {props.errorMsg}</div>
       ) : (
-        <ChessBoard
-          gameState={game}
-          onClickSquare={handleClickSquare}
-          availableMoves={availableMoveDetails?.availableMoves}
-          activePieceId={availableMoveDetails?.pieceId}
-        />
+        <>
+          <h4>Active Team: {game.activeTeam}</h4>
+          <ChessBoard
+            gameState={game}
+            onClickSquare={handleClickSquare}
+            availableMoves={availableMoveDetails?.availableMoves}
+            activePieceId={availableMoveDetails?.pieceId}
+          />
+        </>
       )}
     </div>
   );

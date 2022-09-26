@@ -8,3 +8,5 @@ export interface AvailableMovesForPiece {
 export type GetAvailableMoves = (pieceId: string) => Promise<void>;
 
 export type ClearAvailableMoves = () => void;
+
+export type OnMove = (pieceId: string, x: number, y: number) => void;

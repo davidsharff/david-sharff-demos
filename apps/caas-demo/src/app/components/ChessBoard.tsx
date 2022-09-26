@@ -6,6 +6,7 @@ import {
 } from '@david-sharff-demos/static-caas-data';
 import { ReactElement } from 'react';
 import { css } from '@emotion/react';
+import { useTheme } from '@mui/material';
 
 interface Props {
   gameState: LiveGameState;
@@ -20,6 +21,8 @@ const rowCss = css`
 
 export function ChessBoard(props: Props): ReactElement {
   const { gameState, availableMoves, activePieceId } = props;
+  const theme = useTheme();
+
   return (
     <div>
       {range(8)
@@ -38,6 +41,7 @@ export function ChessBoard(props: Props): ReactElement {
               const isActivePieceId =
                 position?.pieceId && position.pieceId === activePieceId;
 
+              const showHighlight = isAvailableMove || isActivePieceId;
               const squareCss = css`
                 border: solid #333 1px;
                 flex: 1;
@@ -46,8 +50,8 @@ export function ChessBoard(props: Props): ReactElement {
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
-                background-color: ${isAvailableMove || isActivePieceId
-                  ? '#f6f46a66'
+                background-color: ${showHighlight
+                  ? theme.palette.primary.light
                   : '#fff'};
                 cursor: ${position?.pieceType === PieceType.Pawn ||
                 isAvailableMove
