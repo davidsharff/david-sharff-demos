@@ -52,7 +52,7 @@ export function addApiRoutes(app: Express) {
   });
 
   app.get(
-    _addBaseUrl('moves/:gameId/:pieceId'),
+    _addBaseUrl('piece/moves/:gameId/:pieceId'),
     async (req: Request<{ gameId: string; pieceId: string }>, res) => {
       try {
         const { gameId, pieceId } = req.params;
@@ -95,7 +95,7 @@ export function addApiRoutes(app: Express) {
   });
 
   app.post(
-    _addBaseUrl('move'),
+    _addBaseUrl('piece/move'),
     async (
       req: Request<
         never,
