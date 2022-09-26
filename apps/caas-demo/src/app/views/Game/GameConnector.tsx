@@ -2,7 +2,7 @@ import { ReactElement } from 'react';
 import { useFetch } from 'usehooks-ts';
 import { useParams } from 'react-router-dom';
 
-import type { LiveGameState } from '@david-sharff-demos/static-caas-data';
+import { LiveGameState } from '@david-sharff-demos/static-caas-data';
 import { Game } from './Game';
 
 export function GameConnector(): ReactElement {

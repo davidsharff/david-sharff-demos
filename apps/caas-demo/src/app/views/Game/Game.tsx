@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 
 import CircularProgress from '@mui/material/CircularProgress';
 
-import type { LiveGameState } from '@david-sharff-demos/static-caas-data';
+import { LiveGameState } from '@david-sharff-demos/static-caas-data';
 import { ChessBoard } from '../../components/ChessBoard';
 
 interface Props {

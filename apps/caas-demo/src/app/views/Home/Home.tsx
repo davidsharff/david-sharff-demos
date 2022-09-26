@@ -6,11 +6,12 @@ import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Paper from '@mui/material/Paper';
 
-import type { GameRecord } from '@david-sharff-demos/static-caas-data';
+import { GameRecord } from '@david-sharff-demos/static-caas-data';
 
 interface Props {
   allGames?: GameRecord[];
   errorMsg?: string;
+  onCreateGame: () => void;
 }
 const mainColCss = css`
   display: flex;
@@ -22,6 +23,12 @@ const gameItemCss = css`
   justify-content: space-between;
   align-items: center;
   padding: 20px;
+  margin-bottom: 20px;
+`;
+
+const createButtonCss = css`
+  width: 200px;
+  font-size: 14px;
 `;
 
 export function Home(props: Props): ReactElement {
@@ -51,6 +58,13 @@ export function Home(props: Props): ReactElement {
           </Paper>
         ))
       )}
+      <Button
+        css={createButtonCss}
+        variant="contained"
+        onClick={props.onCreateGame}
+      >
+        Create Game
+      </Button>
     </div>
   );
 }
