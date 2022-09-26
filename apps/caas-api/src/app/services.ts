@@ -74,7 +74,12 @@ function _calcCapturedPiecesForTeam(
 ): Array<PieceType> {
   return gameRecord.piecePositionHistory
     .filter((p) => p.team !== team && !!p.capturedPieceId)
-    .map(({ pieceType }) => pieceType);
+    .map(
+      ({ capturedPieceId }) =>
+        gameRecord.piecePositionHistory.find(
+          (p) => p.pieceId === capturedPieceId
+        ).pieceType
+    );
 }
 
 function _calcLivePositions(gameRecord: GameRecord): PiecePosition[] {
