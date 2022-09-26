@@ -33,18 +33,46 @@ export async function createGame(): Promise<LiveGameState> {
 // for a well constrained data set that would only have performance issues unless someone used the game for essentially
 // a DDoS attack.
 function _calcLiveGameState(gameRecord: GameRecord): LiveGameState {
-  const { piecePositionHistory } = gameRecord;
-  const latestPosition = piecePositionHistory.slice(-1)[0];
+  const activeTeam = _calcActiveTeam(gameRecord);
 
-  const capturedWhitePieceTypes = _getCapturedPiecesForTeam(
+  const livePositions = _calcLivePositions(gameRecord);
+
+  const capturedWhitePieceTypes = _calcCapturedPiecesForTeam(
     gameRecord,
     Team.White
   );
-  const capturedBlackPieceTypes = _getCapturedPiecesForTeam(
+
+  const capturedBlackPieceTypes = _calcCapturedPiecesForTeam(
     gameRecord,
     Team.Black
   );
 
+  return {
+    id: gameRecord.id,
+    activeTeam,
+    livePositions,
+    capturedWhitePieceTypes,
+    capturedBlackPieceTypes,
+  };
+}
+
+function _calcActiveTeam(gameRecord: GameRecord): Team {
+  return gameRecord.piecePositionHistory.slice(-1)[0].team === Team.White
+    ? Team.Black
+    : Team.White;
+}
+
+function _calcCapturedPiecesForTeam(
+  gameRecord: GameRecord,
+  team: Team
+): Array<PieceType> {
+  return gameRecord.piecePositionHistory
+    .filter((p) => p.team !== team && !!p.capturedPieceId)
+    .map(({ pieceType }) => pieceType);
+}
+
+function _calcLivePositions(gameRecord: GameRecord): PiecePosition[] {
+  const { piecePositionHistory } = gameRecord;
   // Set guarantees unique entries though I don't love this approach:
   //   1. It may look mysterious to the uninitiated
   //   2. Piece Ids are static and wouldn't have to be calculated if they were defined as constants
@@ -57,34 +85,14 @@ function _calcLiveGameState(gameRecord: GameRecord): LiveGameState {
   // Slice to avoid mutating the OG array.
   const reversePosHistory = piecePositionHistory.slice().reverse();
 
-  const livePositions = uniquePieceIds.reduce(
-    (acc: PiecePosition[], pieceId) => {
-      const isCaptured = piecePositionHistory.some(
-        ({ capturedPieceId }) => capturedPieceId === pieceId
-      );
-      if (isCaptured) {
-        return acc;
-      }
+  return uniquePieceIds.reduce((acc: PiecePosition[], pieceId) => {
+    const isCaptured = piecePositionHistory.some(
+      ({ capturedPieceId }) => capturedPieceId === pieceId
+    );
+    if (isCaptured) {
+      return acc;
+    }
 
-      return [...acc, reversePosHistory.find((p) => p.pieceId === pieceId)];
-    },
-    []
-  );
-
-  return {
-    id: gameRecord.id,
-    activeTeam: latestPosition.team === Team.White ? Team.Black : Team.White,
-    livePositions,
-    capturedWhitePieceTypes,
-    capturedBlackPieceTypes,
-  };
-}
-
-function _getCapturedPiecesForTeam(
-  gameRecord: GameRecord,
-  team: Team
-): Array<PieceType> {
-  return gameRecord.piecePositionHistory
-    .filter((p) => p.team !== team && !!p.capturedPieceId)
-    .map(({ pieceType }) => pieceType);
+    return [...acc, reversePosHistory.find((p) => p.pieceId === pieceId)];
+  }, []);
 }
