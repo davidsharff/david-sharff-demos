@@ -38,3 +38,4 @@ testem.log
 .DS_Store
 Thumbs.db
 /apps/caas-demo-e2e/
+/apps/caas-api/chessData.json
