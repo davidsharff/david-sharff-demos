@@ -202,7 +202,11 @@ export async function moveGamePiece(
 
   const availableMoves = _calcMovesForPieceId(gameRecord, pieceId);
 
-  if (!availableMoves.some((move) => move.x === x && move.y === y)) {
+  const chosenMove = availableMoves.find(
+    (move) => move.x === x && move.y === y
+  );
+
+  if (!chosenMove) {
     throw new Error(`Invalid move`);
   }
 
@@ -210,6 +214,7 @@ export async function moveGamePiece(
     ...curPosition,
     x,
     y,
+    capturedPieceId: chosenMove.capturedPieceId,
   });
 
   return _calcLiveGameState(updatedGameRecord);
