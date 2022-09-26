@@ -3,6 +3,7 @@ import * as path from 'path';
 import {
   GameRecordInput,
   GameRecord,
+  PiecePosition,
 } from '@david-sharff-demos/static-caas-data';
 
 interface JsonDb {
@@ -38,6 +39,28 @@ export async function insertGame(
   await _saveJsonDb(updatedDb);
 
   return game;
+}
+
+export async function insertPiecePositionHistory(
+  id: string,
+  position: PiecePosition
+): Promise<GameRecord> {
+  const gameRecord = await getGameById(id);
+  const updatedGame = {
+    ...gameRecord,
+    piecePositionHistory: [...gameRecord.piecePositionHistory, position],
+  };
+
+  const jsonDb = await _loadJsonDb();
+
+  const updatedDb: JsonDb = {
+    ...jsonDb,
+    games: jsonDb.games.map((game) => (game.id === id ? updatedGame : game)),
+  };
+
+  await _saveJsonDb(updatedDb);
+
+  return updatedGame;
 }
 
 export async function getAllGames(): Promise<GameRecord[]> {

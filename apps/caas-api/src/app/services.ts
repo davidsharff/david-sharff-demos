@@ -10,7 +10,12 @@ import {
   PieceType,
   Team,
 } from '@david-sharff-demos/static-caas-data';
-import { getAllGames, getGameById, insertGame } from './db';
+import {
+  getAllGames,
+  getGameById,
+  insertGame,
+  insertPiecePositionHistory,
+} from './db';
 
 export async function getGameList(): Promise<GameRecord[]> {
   return await getAllGames();
@@ -119,7 +124,7 @@ export function _calcMovesForPieceId(
   );
 
   if (pieceType !== PieceType.Pawn) {
-    throw new Error(`Unhandled piece type ${pieceType} for pieceId ${pieceId}`);
+    throw new Error(`Unhandled piece type ${pieceType}`);
     // Putting in an else to represent this would eventually be in a switch or if/else block for each piece type.
   } else {
     const pieceMoveHistory = piecePositionHistory.filter(
@@ -174,4 +179,38 @@ function _calcCurrentPositionForPieceId(gameRecord: GameRecord, pieceId) {
   return gameRecord.piecePositionHistory
     .filter((p) => p.pieceId === pieceId)
     .slice(-1)[0];
+}
+
+export async function moveGamePiece(
+  gameId: string,
+  pieceId: string,
+  x: number,
+  y: number
+): Promise<LiveGameState> {
+  const gameRecord = await getGameById(gameId);
+  const activeTeam = _calcActiveTeam(gameRecord);
+  const curPosition = _calcCurrentPositionForPieceId(gameRecord, pieceId);
+
+  // TODO: revist error messages
+  if (curPosition.team !== activeTeam) {
+    throw new Error(`Invalid turn order: ${activeTeam} is next to act`);
+  }
+
+  if (curPosition.pieceType !== PieceType.Pawn) {
+    throw new Error(`Unhandled piece type ${curPosition.pieceType}`);
+  }
+
+  const availableMoves = _calcMovesForPieceId(gameRecord, pieceId);
+
+  if (!availableMoves.some((move) => move.x === x && move.y === y)) {
+    throw new Error(`Invalid move`);
+  }
+
+  const updatedGameRecord = await insertPiecePositionHistory(gameId, {
+    ...curPosition,
+    x,
+    y,
+  });
+
+  return _calcLiveGameState(updatedGameRecord);
 }

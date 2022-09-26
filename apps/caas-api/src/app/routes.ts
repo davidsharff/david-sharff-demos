@@ -6,6 +6,7 @@ import {
   getGameState,
   getGameList,
   getAvailableMovesForGamePiece,
+  moveGamePiece,
 } from './services';
 import {
   AvailableMove,
@@ -17,6 +18,7 @@ function _addBaseUrl(endPath: string): string {
   return `/api/v1/game/${endPath}`;
 }
 
+// TODO: include error message in response
 export function addApiRoutes(app: Express) {
   app.get(
     _addBaseUrl('state/:gameId'),
@@ -78,4 +80,32 @@ export function addApiRoutes(app: Express) {
       res.status(500).send(msg);
     }
   });
+
+  app.post(
+    _addBaseUrl('move'),
+    async (
+      req: Request<
+        never,
+        unknown,
+        { gameId: string; pieceId: string; x: number; y: number }
+      >,
+      res
+    ) => {
+      try {
+        const { gameId, pieceId, x, y } = req.body;
+        const newGameState: LiveGameState = await moveGamePiece(
+          gameId,
+          pieceId,
+          x,
+          y
+        );
+
+        res.json(newGameState);
+      } catch (e) {
+        const msg = 'Move failed.';
+        console.error(`${msg}:\n${e}`);
+        res.status(500).send(msg);
+      }
+    }
+  );
 }
