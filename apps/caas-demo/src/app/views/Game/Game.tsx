@@ -29,8 +29,12 @@ export function Game(props: Props): ReactElement {
     return <CircularProgress />;
   }
 
-  const handleClickSquare: (pieceId?: string) => void = (pieceId) => {
+  const handleClickSquare: (x: number, y: number) => void = (x, y) => {
+    const { pieceId } =
+      game?.livePositions?.find((p) => p.x === x && p.y === y) || {};
+
     props.onClearAvailableMoves(); // Hack-ish but ensures clicking on any cell will wipe current selections if they exist.
+
     if (pieceId) {
       props.onGetAvailableMoves(pieceId);
     }

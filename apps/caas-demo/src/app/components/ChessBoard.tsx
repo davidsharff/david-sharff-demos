@@ -9,7 +9,7 @@ import { css } from '@emotion/react';
 
 interface Props {
   gameState: LiveGameState;
-  onClickSquare: (pieceId?: string) => void;
+  onClickSquare: (x: number, y: number) => void;
   availableMoves?: AvailableMove[];
   activePieceId?: string;
 }
@@ -59,7 +59,7 @@ export function ChessBoard(props: Props): ReactElement {
                 <div
                   key={x}
                   css={squareCss}
-                  onClick={() => props.onClickSquare(position?.pieceId)}
+                  onClick={() => props.onClickSquare(x, y)}
                 >
                   {position ? (
                     `${position.team[0]}: ${position.pieceId}`
