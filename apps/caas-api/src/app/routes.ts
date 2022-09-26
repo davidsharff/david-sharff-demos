@@ -74,6 +74,7 @@ export function addApiRoutes(app: Express) {
     _addBaseUrl('move-history/:gameId'),
     async (req: Request<{ gameId: string }>, res) => {
       try {
+        // Implemented per spec but move history is already available given implementation and would just need to be fetched and returned.
         res.status(500).send('Move history is not currently supported.');
       } catch (e) {
         console.error(`Something bad happened:\n${e}`);
