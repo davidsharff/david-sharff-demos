@@ -1,12 +1,15 @@
+import { ReactElement } from 'react';
 import {
   AvailableMove,
   LiveGameState,
   PieceType,
   range,
 } from '@david-sharff-demos/static-caas-data';
-import { ReactElement } from 'react';
+
 import { css } from '@emotion/react';
 import { useTheme } from '@mui/material';
+
+import { pieceImageSrc } from '../../constants';
 
 interface Props {
   gameState: LiveGameState;
@@ -33,6 +36,17 @@ export function ChessBoard(props: Props): ReactElement {
         .map((y) => (
           <div key={y} css={rowCss}>
             {range(8).map((x) => {
+              const isEvenX = x % 2 === 0;
+              const isEvenY = y % 2 === 0;
+
+              const backgroundColor = isEvenY
+                ? isEvenX
+                  ? theme.palette.grey['400']
+                  : theme.palette.grey['50']
+                : isEvenX
+                ? theme.palette.grey['50']
+                : theme.palette.grey['400'];
+
               const position = gameState.livePositions.find(
                 (pos) => pos.x === x && pos.y === y
               );
@@ -48,18 +62,35 @@ export function ChessBoard(props: Props): ReactElement {
               const squareCss = css`
                 border: solid #333 1px;
                 flex: 1;
-                padding: 30px 5px;
                 text-align: center;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
                 background-color: ${showHighlight
                   ? theme.palette.primary.light
-                  : '#fff'};
+                  : backgroundColor};
                 cursor: ${position?.pieceType === PieceType.Pawn ||
                 isAvailableMove
                   ? 'pointer'
                   : 'default'};
+              `;
+
+              const breakPointValues = theme.breakpoints.values;
+              const imgCss = css`
+                width: 90px;
+                height: 90px;
+                @media (max-width: ${breakPointValues.lg}px) {
+                  width: 75px;
+                  height: 75px;
+                }
+                @media (max-width: ${breakPointValues.md}px) {
+                  width: 60px;
+                  height: 60px;
+                }
+                @media (max-width: ${breakPointValues.sm}px) {
+                  width: 45px;
+                  height: 45px;
+                }
               `;
 
               return (
@@ -69,9 +100,13 @@ export function ChessBoard(props: Props): ReactElement {
                   onClick={() => props.onClickSquare(x, y)}
                 >
                   {position ? (
-                    `${position.team[0]}: ${position.pieceId}`
+                    <img
+                      css={imgCss}
+                      src={pieceImageSrc[position.team][position.pieceType]}
+                      alt={`${position.team} ${position.pieceType}`}
+                    />
                   ) : (
-                    <span>&nbsp;</span>
+                    <div css={imgCss} />
                   )}
                 </div>
               );

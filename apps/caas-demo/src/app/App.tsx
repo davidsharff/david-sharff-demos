@@ -9,6 +9,7 @@ import '../reset.css';
 import { HomeConnector } from './views/Home/HomeConnector';
 import { GameConnector } from './views/Game/GameConnector';
 
+// TODO: try to get this working as children
 const router = createBrowserRouter([
   {
     path: '/',

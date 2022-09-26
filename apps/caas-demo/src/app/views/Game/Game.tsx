@@ -3,7 +3,11 @@ import { css } from '@emotion/react';
 
 import CircularProgress from '@mui/material/CircularProgress';
 
-import { LiveGameState, PieceType } from '@david-sharff-demos/static-caas-data';
+import {
+  LiveGameState,
+  PieceType,
+  Team,
+} from '@david-sharff-demos/static-caas-data';
 import { ChessBoard } from '../../components/ChessBoard';
 import {
   AvailableMovesForPiece,
@@ -11,6 +15,8 @@ import {
   GetAvailableMoves,
   OnMove,
 } from './types';
+import { useTheme } from '@mui/material';
+import { pieceImageSrc } from '../../../constants';
 
 interface GameProps {
   game: LiveGameState | null;
@@ -25,12 +31,10 @@ const mainColCss = css`
   flex-direction: column;
 `;
 
-const gameData = css`
-  display: flex;
-`;
-
 export function Game(props: GameProps): ReactElement {
   const { game, availableMoveDetails } = props;
+  const theme = useTheme();
+
   if (!game) {
     return <CircularProgress />;
   }
@@ -49,6 +53,13 @@ export function Game(props: GameProps): ReactElement {
       props.onGetAvailableMoves(clickedPieceId);
     }
   };
+
+  const gameData = css`
+    display: flex;
+    @media (max-width: ${theme.breakpoints.values.md}px) {
+      flex-direction: column;
+    }
+  `;
 
   return (
     <div css={mainColCss}>
@@ -81,39 +92,64 @@ interface CapturedPiecesProps {
   capturedBlackPieceTypes: PieceType[];
 }
 
-const capturesMain = css`
-  display: flex;
-  flex: 0;
-  margin-left: 20px;
-  h4 {
-    margin-top: 0;
-  }
-`;
-const captureCol = css`
-  display: flex;
-  flex-direction: column;
-  margin-right: 10px;
-`;
 function CapturedPieces({
   capturedWhitePieceTypes,
   capturedBlackPieceTypes,
 }: CapturedPiecesProps): ReactElement {
+  const theme = useTheme();
+
+  const capturesMain = css`
+    display: flex;
+    flex: 0;
+    margin-left: 20px;
+    @media (max-width: ${theme.breakpoints.values.md}px) {
+      flex-direction: column;
+      margin-top: 10px;
+      margin-left: 0;
+      width: 100%;
+    }
+    h4 {
+      margin: 0;
+    }
+  `;
+
+  const captureSection = css`
+    display: flex;
+    flex-direction: column;
+    width: 120px;
+    margin-right: 10px;
+    @media (max-width: ${theme.breakpoints.values.md}px) {
+      flex-direction: row;
+      align-items: center;
+      width: 100%;
+    }
+  `;
+
+  const imageCss = css`
+    height: 45px;
+    width: 45px;
+  `;
+
   return (
     <div css={capturesMain}>
-      <div css={captureCol}>
+      <div css={captureSection}>
         <h4>White Captures</h4>
-        {capturedWhitePieceTypes.map((pieceType, i) => (
-          <div key={pieceType + i /* TODO: cleanup hack by adding pieceId*/}>
-            {pieceType}
-          </div>
+        {capturedBlackPieceTypes.map((pieceType, i) => (
+          <img
+            css={imageCss}
+            src={pieceImageSrc[Team.Black][pieceType]}
+            alt={`${Team.Black} ${pieceType}`}
+          />
         ))}
       </div>
-      <div css={captureCol}>
+      <div css={captureSection}>
         <h4>Black Captures</h4>
-        {capturedBlackPieceTypes.map((pieceType, i) => (
-          <div key={pieceType + i /* TODO: cleanup hack by adding pieceId*/}>
-            {pieceType}
-          </div>
+        {capturedWhitePieceTypes.map((pieceType, i) => (
+          <img
+            css={imageCss}
+            src={pieceImageSrc[Team.White][pieceType]}
+            alt={`${Team.White} ${pieceType}`}
+          />
         ))}
       </div>
     </div>
