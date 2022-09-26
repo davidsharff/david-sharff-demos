@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 
 import CircularProgress from '@mui/material/CircularProgress';
 
-import { LiveGameState } from '@david-sharff-demos/static-caas-data';
+import { LiveGameState, PieceType } from '@david-sharff-demos/static-caas-data';
 import { ChessBoard } from '../../components/ChessBoard';
 import {
   AvailableMovesForPiece,
@@ -12,7 +12,7 @@ import {
   OnMove,
 } from './types';
 
-interface Props {
+interface GameProps {
   game: LiveGameState | null;
   errorMsg?: string;
   onGetAvailableMoves: GetAvailableMoves;
@@ -25,7 +25,11 @@ const mainColCss = css`
   flex-direction: column;
 `;
 
-export function Game(props: Props): ReactElement {
+const gameData = css`
+  display: flex;
+`;
+
+export function Game(props: GameProps): ReactElement {
   const { game, availableMoveDetails } = props;
   if (!game) {
     return <CircularProgress />;
@@ -54,14 +58,64 @@ export function Game(props: Props): ReactElement {
       ) : (
         <>
           <h4>Active Team: {game.activeTeam}</h4>
-          <ChessBoard
-            gameState={game}
-            onClickSquare={handleClickSquare}
-            availableMoves={availableMoveDetails?.availableMoves}
-            activePieceId={availableMoveDetails?.pieceId}
-          />
+          <div css={gameData}>
+            <ChessBoard
+              gameState={game}
+              onClickSquare={handleClickSquare}
+              availableMoves={availableMoveDetails?.availableMoves}
+              activePieceId={availableMoveDetails?.pieceId}
+            />
+            <CapturedPieces
+              capturedWhitePieceTypes={game.capturedWhitePieceTypes}
+              capturedBlackPieceTypes={game.capturedBlackPieceTypes}
+            />
+          </div>
         </>
       )}
+    </div>
+  );
+}
+
+interface CapturedPiecesProps {
+  capturedWhitePieceTypes: PieceType[];
+  capturedBlackPieceTypes: PieceType[];
+}
+
+const capturesMain = css`
+  display: flex;
+  flex: 0;
+  margin-left: 20px;
+  h4 {
+    margin-top: 0;
+  }
+`;
+const captureCol = css`
+  display: flex;
+  flex-direction: column;
+  margin-right: 10px;
+`;
+function CapturedPieces({
+  capturedWhitePieceTypes,
+  capturedBlackPieceTypes,
+}: CapturedPiecesProps): ReactElement {
+  return (
+    <div css={capturesMain}>
+      <div css={captureCol}>
+        <h4>White Captures</h4>
+        {capturedWhitePieceTypes.map((pieceType, i) => (
+          <div key={pieceType + i /* TODO: cleanup hack by adding pieceId*/}>
+            {pieceType}
+          </div>
+        ))}
+      </div>
+      <div css={captureCol}>
+        <h4>Black Captures</h4>
+        {capturedBlackPieceTypes.map((pieceType, i) => (
+          <div key={pieceType + i /* TODO: cleanup hack by adding pieceId*/}>
+            {pieceType}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

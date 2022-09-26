@@ -15,6 +15,9 @@ interface Props {
   activePieceId?: string;
 }
 
+const wrapperCss = css`
+  flex: 1;
+`;
 const rowCss = css`
   display: flex;
 `;
@@ -24,7 +27,7 @@ export function ChessBoard(props: Props): ReactElement {
   const theme = useTheme();
 
   return (
-    <div>
+    <div css={wrapperCss}>
       {range(8)
         .reverse()
         .map((y) => (
