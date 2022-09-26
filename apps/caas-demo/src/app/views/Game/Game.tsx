@@ -5,10 +5,18 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 import { LiveGameState } from '@david-sharff-demos/static-caas-data';
 import { ChessBoard } from '../../components/ChessBoard';
+import {
+  AvailableMovesForPiece,
+  ClearAvailableMoves,
+  GetAvailableMoves,
+} from './types';
 
 interface Props {
   game?: LiveGameState;
   errorMsg?: string;
+  onGetAvailableMoves: GetAvailableMoves;
+  onClearAvailableMoves: ClearAvailableMoves;
+  availableMoveDetails: AvailableMovesForPiece | null;
 }
 const mainColCss = css`
   display: flex;
@@ -16,10 +24,16 @@ const mainColCss = css`
 `;
 
 export function Game(props: Props): ReactElement {
-  const { game } = props;
+  const { game, availableMoveDetails } = props;
   if (!game) {
     return <CircularProgress />;
   }
+
+  const handleClickSquare: (pieceId?: string) => void = (pieceId) => {
+    if (pieceId) {
+      props.onGetAvailableMoves(pieceId);
+    }
+  };
 
   return (
     <div css={mainColCss}>
@@ -27,7 +41,12 @@ export function Game(props: Props): ReactElement {
       {props.errorMsg ? (
         <div>Error: {props.errorMsg}</div>
       ) : (
-        <ChessBoard gameState={game} />
+        <ChessBoard
+          gameState={game}
+          onClickSquare={handleClickSquare}
+          availableMoves={availableMoveDetails?.availableMoves}
+          activePieceId={availableMoveDetails?.pieceId}
+        />
       )}
     </div>
   );
