@@ -35,8 +35,6 @@ export async function createGame(): Promise<LiveGameState> {
   return _calcLiveGameState(gameRecord);
 }
 
-// HPjkKoPlC5oKkeQT8pNdawGnYZYhHOE8R6TvBnY4hqE6iu5mMf5I9jZVW1k740Yx
-
 // Overall this function makes more passes over the data than necessary, but I wouldn't add complexity or reduce readability
 // for a well constrained data set that would only have performance issues unless someone used the game for essentially
 // a DDoS attack.
