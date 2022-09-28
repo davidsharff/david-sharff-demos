@@ -106,7 +106,13 @@ export function ChessBoard(props: Props): ReactElement {
                       alt={`${position.team} ${position.pieceType}`}
                     />
                   ) : (
-                    <div css={imgCss} />
+                    <img
+                      css={imgCss}
+                      style={{
+                        content:
+                          'url("data:image/gif;base64,R0lGODlhAQABAPAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==")',
+                      }}
+                    />
                   )}
                 </div>
               );
