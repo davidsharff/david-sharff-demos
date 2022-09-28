@@ -1,44 +1,23 @@
-import { promises as fs, existsSync, writeFileSync } from 'fs';
-import * as path from 'path';
 import {
   GameRecordInput,
   GameRecord,
   PiecePosition,
 } from '@david-sharff-demos/static-caas-data';
-
-interface JsonDb {
-  games: GameRecord[];
-}
-
-// TODO: not sure if this will work outside dev mode (first time using Nx). The json "db" is temporary in any case.
-const jsonDbPath = path.resolve(
-  __dirname,
-  '../../../apps/caas-api/chessData.json'
-);
-
-if (!existsSync(jsonDbPath)) {
-  writeFileSync(
-    jsonDbPath,
-    JSON.stringify({
-      games: [],
-    })
-  );
-}
+import { client } from './mongo';
+import { ObjectId } from 'mongodb';
 
 export async function insertGame(
   gameInput: GameRecordInput
 ): Promise<GameRecord> {
-  const jsonDb = await _loadJsonDb();
-  const game: GameRecord = { id: _generateId(), ...gameInput };
+  const collection = await client.db('caas').collection('game');
 
-  const updatedDb: JsonDb = {
-    ...jsonDb,
-    games: [...jsonDb.games, game],
+  // TODO: when writing this logic originally I had thought I'd get the entire record back
+  //       after inserting. I would consider a refactor now if there was more time.
+  const result = await collection.insertOne(gameInput);
+  return {
+    id: result.insertedId.toString(),
+    ...gameInput,
   };
-
-  await _saveJsonDb(updatedDb);
-
-  return game;
 }
 
 export async function insertPiecePositionHistory(
@@ -46,45 +25,47 @@ export async function insertPiecePositionHistory(
   position: PiecePosition
 ): Promise<GameRecord> {
   const gameRecord = await getGameById(id);
-  const updatedGame = {
-    ...gameRecord,
-    piecePositionHistory: [...gameRecord.piecePositionHistory, position],
-  };
 
-  const jsonDb = await _loadJsonDb();
+  const collection = await client.db('caas').collection('game');
 
-  const updatedDb: JsonDb = {
-    ...jsonDb,
-    games: jsonDb.games.map((game) => (game.id === id ? updatedGame : game)),
-  };
+  await collection.updateOne(
+    {
+      _id: new ObjectId(id),
+    },
+    {
+      $set: {
+        piecePositionHistory: [...gameRecord.piecePositionHistory, position],
+      },
+    }
+  );
 
-  await _saveJsonDb(updatedDb);
-
-  return updatedGame;
+  // TODO: I don't like this extra query
+  return await getGameById(id);
 }
 
 export async function getAllGames(): Promise<GameRecord[]> {
-  const jsonDb = await _loadJsonDb();
-  return jsonDb.games;
+  const collection = await client.db('caas').collection('game');
+
+  const documents = await collection.find().toArray();
+
+  return _convertDocuments(documents);
 }
 
 export async function getGameById(id: string): Promise<GameRecord> {
-  const jsonDb = await _loadJsonDb();
+  const collection = await client.db('caas').collection('game');
 
-  return jsonDb.games.find((g) => g.id === id);
+  const documents = await collection
+    .find({
+      _id: new ObjectId(id),
+    })
+    .toArray();
+
+  return _convertDocuments(documents)[0];
 }
 
-// Assessment asks for Mongo which by default would require a custom type for primary keys from their lib.
-// Using a string id as a facsimile for now.
-function _generateId(): string {
-  return Math.round(Math.random() * 10000000) + '';
-}
-
-async function _loadJsonDb(): Promise<JsonDb> {
-  const fileData = await fs.readFile(jsonDbPath, 'utf8');
-  return JSON.parse(fileData);
-}
-
-async function _saveJsonDb(jsonDb: JsonDb): Promise<void> {
-  await fs.writeFile(jsonDbPath, JSON.stringify(jsonDb));
+function _convertDocuments(documents): GameRecord[] {
+  return documents.map(({ _id, piecePositionHistory }) => ({
+    id: _id.toString(),
+    piecePositionHistory,
+  }));
 }

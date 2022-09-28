@@ -39,3 +39,5 @@ testem.log
 Thumbs.db
 /apps/caas-demo-e2e/
 /apps/caas-api/chessData.json
+/apps/caas-api/config/*
+/apps/caas-api/auth.json
