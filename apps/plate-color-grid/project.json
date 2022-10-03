@@ -1,0 +1,83 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/plate-color-grid/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "compiler": "babel",
+        "outputPath": "dist/apps/plate-color-grid",
+        "index": "apps/plate-color-grid/src/index.html",
+        "baseHref": "/",
+        "main": "apps/plate-color-grid/src/main.tsx",
+        "polyfills": "apps/plate-color-grid/src/polyfills.ts",
+        "tsConfig": "apps/plate-color-grid/tsconfig.app.json",
+        "assets": [
+          "apps/plate-color-grid/src/favicon.ico",
+          "apps/plate-color-grid/src/assets"
+        ],
+        "styles": [],
+        "scripts": [],
+        "webpackConfig": "@nrwl/react/plugins/webpack"
+      },
+      "configurations": {
+        "development": {
+          "extractLicenses": false,
+          "optimization": false,
+          "sourceMap": true,
+          "vendorChunk": true
+        },
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/plate-color-grid/src/environments/environment.ts",
+              "with": "apps/plate-color-grid/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/webpack:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "plate-color-grid:build",
+        "hmr": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "plate-color-grid:build:development"
+        },
+        "production": {
+          "buildTarget": "plate-color-grid:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/plate-color-grid/**/*.{ts,tsx,js,jsx}"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/plate-color-grid"],
+      "options": {
+        "jestConfig": "apps/plate-color-grid/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

@@ -5,6 +5,8 @@
     "caas-api": "apps/caas-api",
     "caas-demo": "apps/caas-demo",
     "caas-demo-e2e": "apps/caas-demo-e2e",
+    "plate-color-grid": "apps/plate-color-grid",
+    "plate-color-grid-e2e": "apps/plate-color-grid-e2e",
     "static-caas-data": "libs/static-caas-data"
   }
 }
