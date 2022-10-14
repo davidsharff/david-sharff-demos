@@ -5,6 +5,7 @@
     "caas-api": "apps/caas-api",
     "caas-demo": "apps/caas-demo",
     "caas-demo-e2e": "apps/caas-demo-e2e",
+    "mega-map-demo": "apps/mega-map-demo",
     "static-caas-data": "libs/static-caas-data"
   }
 }
