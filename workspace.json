@@ -5,6 +5,7 @@
     "caas-api": "apps/caas-api",
     "caas-demo": "apps/caas-demo",
     "caas-demo-e2e": "apps/caas-demo-e2e",
+    "levels": "apps/levels",
     "static-caas-data": "libs/static-caas-data"
   }
 }
